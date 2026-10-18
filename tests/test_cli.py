@@ -64,6 +64,12 @@ class InstallLifecycleTests(unittest.TestCase):
         manifest = json.loads((self.manifest_root / "test-app.json").read_text())
         self.assertEqual(manifest["id"], "test-app")
 
+    def test_move_mode_moves_source_into_managed_directory(self):
+        self.assertEqual(cli.install(self.args(move=True)), 0)
+        installed = self.app_root / "test-app" / self.source.name
+        self.assertFalse(self.source.exists())
+        self.assertTrue(installed.exists())
+
     def test_dry_run_does_not_write(self):
         self.assertEqual(cli.install(self.args(dry_run=True)), 0)
         self.assertTrue(self.source.exists())
@@ -81,6 +87,14 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertTrue((self.app_root / "test-app" / self.source.name).exists())
         self.assertFalse((self.desktop_root / "test-app.desktop").exists())
         self.assertFalse((self.manifest_root / "test-app.json").exists())
+
+    def test_failed_manifest_write_restores_moved_source(self):
+        with patch.object(cli, "save_json_atomic", side_effect=OSError("simulated disk error")):
+            with self.assertRaises(OSError):
+                cli.install(self.args(move=True))
+        self.assertTrue(self.source.exists())
+        self.assertFalse((self.app_root / "test-app" / self.source.name).exists())
+        self.assertFalse((self.desktop_root / "test-app.desktop").exists())
 
     def test_failed_manifest_write_rolls_back_copy_and_desktop(self):
         with patch.object(cli, "save_json_atomic", side_effect=OSError("simulated disk error")):
