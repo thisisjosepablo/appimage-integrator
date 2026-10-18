@@ -76,13 +76,14 @@ def save_json_atomic(path: Path, data: dict[str, Any]) -> None:
 
 
 def install(args: argparse.Namespace) -> int:
-    source = Path(args.appimage).expanduser().resolve()
+    input_path = Path(args.appimage).expanduser()
+    if input_path.is_symlink():
+        raise IntegrationError("Usa la ruta al archivo real, no un enlace simbólico.")
+    source = input_path.resolve()
     if not source.is_file():
         raise IntegrationError(f"No existe el archivo: {source}")
     if not os.access(source, os.R_OK):
         raise IntegrationError(f"No se puede leer el archivo: {source}")
-    if source.is_symlink():
-        raise IntegrationError("Usa la ruta al archivo real, no un enlace simbólico.")
     name = args.name.strip() if args.name else source.stem
     if not name or any(ch in name for ch in "\r\n\0"):
         raise IntegrationError("El nombre visible no puede estar vacío ni contener saltos de línea.")
