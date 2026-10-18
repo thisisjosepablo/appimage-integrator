@@ -141,8 +141,8 @@ def install(args: argparse.Namespace) -> int:
             icon_target = app_folder / f"{app_id}{suffix}"
             if icon_target.exists():
                 raise IntegrationError(f"El icono de destino ya existe: {icon_target}")
-            shutil.copy2(icon_source, icon_target)
             icon_created = True
+            shutil.copy2(icon_source, icon_target)
 
         desktop_text = "\n".join([
             "[Desktop Entry]",
