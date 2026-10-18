@@ -24,6 +24,7 @@ classifiers = [
 
 [project.scripts]
 appimage-integrator = "appimage_integrator.cli:main"
+appimage-integrator-gui = "appimage_integrator.gui:main"
 
 [tool.setuptools.packages.find]
 include = ["appimage_integrator*"]
