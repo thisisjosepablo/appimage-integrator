@@ -133,6 +133,7 @@ CI runs the unit test suite on supported Python versions. Contributions should i
 - [ ] Update workflows that respect upstream AppImage update metadata
 - [x] End-to-end lifecycle tests for install, dry-run, duplicate detection, rollback, and uninstall path validation
 - [ ] More distribution/desktop-environment integration tests
+- [x] Automated wheel/source artifact build workflow (not yet signed)
 - [ ] Signed releases and reproducible release artifacts
 
 ## License
