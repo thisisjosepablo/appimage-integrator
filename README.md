@@ -40,6 +40,14 @@ python -m pip install -e .
 appimage-integrator --help
 ```
 
+An optional graphical interface is also available when Tkinter is installed:
+
+```bash
+appimage-integrator-gui
+```
+
+On some distributions Tkinter is packaged separately (for example, as `python3-tk`). The CLI remains fully usable without a graphical environment.
+
 ### Install an AppImage
 
 ```bash
@@ -108,7 +116,8 @@ CI runs the unit test suite on supported Python versions. Contributions should i
 
 ## Roadmap
 
-- [ ] Optional GUI and file-manager integration
+- [x] Optional basic Tkinter GUI
+- [ ] File-manager context-menu integration
 - [ ] Desktop-file and icon discovery through safe, external tooling
 - [ ] Update workflows that respect upstream AppImage update metadata
 - [ ] More distribution/desktop-environment integration tests
