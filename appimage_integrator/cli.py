@@ -119,6 +119,9 @@ def install(args: argparse.Namespace) -> int:
     MANIFEST_ROOT.mkdir(parents=True, exist_ok=True)
     app_home.mkdir(parents=True, exist_ok=False)
     moved_source = False
+    icon_created = False
+    desktop_created = False
+    manifest_created = False
     try:
         if args.move:
             if source == final_image:
@@ -139,6 +142,7 @@ def install(args: argparse.Namespace) -> int:
             if icon_target.exists():
                 raise IntegrationError(f"El icono de destino ya existe: {icon_target}")
             shutil.copy2(icon_source, icon_target)
+            icon_created = True
 
         desktop_text = "\n".join([
             "[Desktop Entry]",
@@ -155,6 +159,7 @@ def install(args: argparse.Namespace) -> int:
         ])
         # Exclusive create prevents overwriting a launcher not owned by this tool.
         with desktop.open("x", encoding="utf-8") as handle:
+            desktop_created = True
             handle.write(desktop_text)
         desktop.chmod(0o644)
         manifest = {
@@ -168,9 +173,10 @@ def install(args: argparse.Namespace) -> int:
             "moved_source": moved_source,
         }
         save_json_atomic(manifest_path, manifest)
+        manifest_created = True
     except Exception:
-        for path in (desktop, icon_target):
-            if path:
+        for path, created in ((desktop, desktop_created), (icon_target, icon_created), (manifest_path, manifest_created)):
+            if path and created:
                 try:
                     path.unlink(missing_ok=True)
                 except OSError:
@@ -223,15 +229,17 @@ def uninstall(args: argparse.Namespace) -> int:
     app_id = slugify(args.id)
     data = load_manifest(app_id)
     managed_root = (APP_ROOT / app_id).resolve()
-    desktop = Path(data.get("desktop_file", "")).resolve()
-    app_home = Path(data.get("appimage", "")).resolve().parent
-    if desktop != (DESKTOP_ROOT / f"{app_id}.desktop").resolve():
+    # Compare lexical absolute paths: resolve() follows replaced symlinks.
+    desktop = Path(data.get("desktop_file", "")).expanduser().absolute()
+    appimage_path = Path(data.get("appimage", "")).expanduser().absolute()
+    app_home = appimage_path.parent
+    if desktop != (DESKTOP_ROOT / f"{app_id}.desktop").absolute():
         raise IntegrationError("El manifiesto apunta a un lanzador fuera de la ruta administrada; se cancela.")
-    if app_home != managed_root:
+    if app_home != (APP_ROOT / app_id).absolute() or appimage_path.name in ("", ".", ".."):
         raise IntegrationError("El manifiesto apunta a una AppImage fuera de su carpeta administrada; se cancela.")
     icon_value = data.get("icon_file")
-    icon = Path(icon_value).resolve() if icon_value else None
-    if icon and ICON_ROOT.resolve() not in icon.parents:
+    icon = Path(icon_value).expanduser().absolute() if icon_value else None
+    if icon and ICON_ROOT.absolute() not in icon.parents:
         raise IntegrationError("El manifiesto apunta a un icono fuera de la carpeta administrada; se cancela.")
     if args.dry_run:
         print(f"Se eliminaría el lanzador: {desktop}")
