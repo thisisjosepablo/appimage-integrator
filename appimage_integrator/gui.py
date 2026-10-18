@@ -4,7 +4,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, simpledialog, ttk
 
 
 class App:
@@ -93,14 +93,13 @@ class App:
         self.run_cli(["list"])
 
     def uninstall(self) -> None:
-        app_id = tk.simpledialog.askstring("Desinstalar", "ID de la integración (consulta «Ver integraciones»):")
+        app_id = simpledialog.askstring("Desinstalar", "ID de la integración (consulta «Ver integraciones»):")
         if app_id and messagebox.askyesno("Confirmar", f"¿Eliminar el lanzador de «{app_id}»? La AppImage se conservará."):
             self.run_cli(["uninstall", app_id])
 
 
 def main() -> int:
     try:
-        from tkinter import simpledialog  # noqa: F401
         root = tk.Tk()
     except tk.TclError as exc:
         print(f"No se pudo iniciar la interfaz gráfica: {exc}", file=sys.stderr)
