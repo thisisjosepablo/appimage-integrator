@@ -103,10 +103,7 @@ def install(args: argparse.Namespace) -> int:
 
     existing = manifest_path.exists() or desktop.exists() or app_home.exists()
     if existing and not args.force:
-        raise IntegrationError(f"Ya existe una integración o destino para «{app_id}». Usa --force solo si deseas reemplazarla.")
-    if args.force and existing:
-        # Replacing an app while preserving rollback semantics is intentionally not implicit.
-        raise IntegrationError("--force no está disponible todavía para reemplazar instalaciones. Desinstala primero la existente.")
+        raise IntegrationError(f"Ya existe una integración o destino para «{app_id}». Desinstala la integración existente antes de instalarla de nuevo.")
 
     if args.dry_run:
         print("Plan (sin cambios):")
@@ -268,7 +265,6 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--id", help="identificador estable (por defecto se deriva del nombre)")
     p.add_argument("--icon", help="icono local PNG, SVG o XPM; no se extrae ni ejecuta la AppImage")
     p.add_argument("--move", action="store_true", help="mover en vez de copiar (por defecto copia)")
-    p.add_argument("--force", action="store_true", help=argparse.SUPPRESS)
     p.add_argument("--dry-run", action="store_true", help="mostrar el plan sin cambiar archivos")
     p.set_defaults(func=install)
     p = sub.add_parser("list", help="listar integraciones administradas")
