@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a reproducible bug
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Please do not attach AppImages or other executable files."
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Include the command and sanitized output.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: AppImage Integrator version
+      placeholder: "0.2.0"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Distribution, desktop, Python version
+      placeholder: "Fedora 42, GNOME, Python 3.12"
+    validations:
+      required: true
