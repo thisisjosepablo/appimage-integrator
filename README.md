@@ -46,6 +46,15 @@ An optional graphical interface is also available when Tkinter is installed:
 appimage-integrator-gui
 ```
 
+Install directly from the source checkout without publishing a package:
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e .
+appimage-integrator --help
+```
+
 On some distributions Tkinter is packaged separately (for example, as `python3-tk`). The CLI remains fully usable without a graphical environment.
 
 ### Install an AppImage
@@ -112,6 +121,8 @@ An optional icon must be a local PNG, SVG, or XPM file. AppImage-internal icon e
 python -m unittest discover -s tests -v
 ```
 
+The tests use temporary directories and inert fixture files; they do not execute AppImages or require a graphical session.
+
 CI runs the unit test suite on supported Python versions. Contributions should include tests for behavior changes; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Roadmap
@@ -120,6 +131,7 @@ CI runs the unit test suite on supported Python versions. Contributions should i
 - [ ] File-manager context-menu integration
 - [ ] Desktop-file and icon discovery through safe, external tooling
 - [ ] Update workflows that respect upstream AppImage update metadata
+- [x] End-to-end lifecycle tests for install, dry-run, duplicate detection, rollback, and uninstall path validation
 - [ ] More distribution/desktop-environment integration tests
 - [ ] Signed releases and reproducible release artifacts
 
